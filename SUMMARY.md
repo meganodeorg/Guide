@@ -2,3 +2,4 @@
 
 * [Guide](README.md)
   * [SIDE](readme/side.md)
+  * [Page](readme/page.md)
