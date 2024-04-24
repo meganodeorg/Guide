@@ -1,33 +1,42 @@
 # Command
 
-## Managing keys
+### Managing keys
+
 Generate new key
+
 ```
 sided keys add wallet
 
 ```
+
 Recover key
+
 ```
 sided keys add wallet --recover
 
 ```
+
 List all key
+
 ```
 sided keys list
 
 ```
+
 Delete key
+
 ```
 sided keys delete wallet
 ```
 
-
 Query wallet balances
+
 ```
 alignedlayerd q bank balances $(alignedlayerd keys show wallet -a)
 ```
 
-## Managing validators
+### Managing validators
+
 Create validator
 
 ```
@@ -52,6 +61,7 @@ sided tx staking create-validator \
 ```
 
 Edit validator
+
 ```
 sided tx staking edit-validator \
 --new-moniker "your-moniker-name" \
@@ -67,7 +77,9 @@ sided tx staking edit-validator \
 --gas-prices 0.005uside \
 -y
 ```
+
 Unjail
+
 ```
 sided tx slashing unjail --from wallet --chain-id side-testnet-2 --gas-adjustment 1.4 --gas auto --gas-prices 0.005uside -y
 
@@ -79,89 +91,123 @@ Jail reason
 sided query slashing signing-info $(sided tendermint show-validator)
 ```
 
-
 View validator details
+
 ```
 sided q staking validator $(sided keys show wallet --bech val -a)
 
 ```
+
 Query active validators
+
 ```
 sided q staking validators -oj --limit=3000 | jq '.validators[] | select(.status=="BOND_STATUS_BONDED")' | jq -r '(.tokens|tonumber/pow(10; 6)|floor|tostring) + " \t " + .description.moniker' | sort -gr | nl
 ```
+
 Query inactive validators
+
 ```
 sided q staking validators -oj --limit=3000 | jq '.validators[] | select(.status=="BOND_STATUS_UNBONDED")' | jq -r '(.tokens|tonumber/pow(10; 6)|floor|tostring) + " \t " + .description.moniker' | sort -gr | nl
 ```
 
-## Managing Tokens
+### Managing Tokens
+
 Delegate tokens to your validator
+
 ```
 sided tx staking delegate $(sided keys show wallet --bech val -a) 1000000uside --from wallet --chain-id side-testnet-2 --gas-adjustment 1.4 --gas auto --gas-prices 0.005uside -y
 ```
+
 Send token
+
 ```
 sided tx bank send wallet <to-wallet-address> 1000000uside --from wallet --chain-id side-testnet-2 --gas-adjustment 1.4 --gas auto --gas-prices 0.005uside -y
 ```
+
 Withdraw reward from all validator
+
 ```
 sided tx distribution withdraw-all-rewards --from wallet --chain-id side-testnet-2 --gas-adjustment 1.4 --gas auto --gas-prices 0.005uside -y
 ```
+
 Withdraw reward and commission
+
 ```
 sided tx distribution withdraw-rewards $(sided keys show wallet --bech val -a) --commission --from wallet --chain-id side-testnet-2 --gas-adjustment 1.4 --gas auto --gas-prices 0.005uside -y
 ```
+
 Redelegate to another validator
+
 ```
 sided tx staking redelegate $(sided keys show wallet --bech val -a) <to-valoper-address> 1000000uside --from wallet --chain-id side-testnet-2 --gas-adjustment 1.4 --gas auto --gas-prices 0.005uside -y
 ```
 
-## Governance
+### Governance
+
 Query list proposal
+
 ```
 sided query gov proposals
 ```
+
 View proposal by ID
+
 ```
 sided query gov proposal 1
 ```
+
 Vote yes
+
 ```
 sided tx gov vote 1 yes --from wallet --chain-id side-testnet-2 --gas-adjustment 1.4 --gas auto --gas-prices 0.005uside -y
 ```
+
 Vote No
+
 ```
 sided tx gov vote 1 no --from wallet --chain-id side-testnet-2 --gas-adjustment 1.4 --gas auto --gas-prices 0.005uside -y
 ```
 
 Vote option NoWithVeto
+
 ```
 sided tx gov vote 1 NoWithVeto --from wallet --chain-id side-testnet-2 --gas-adjustment 1.4 --gas auto --gas-prices 0.005uside -y
 ```
 
-## Maintenance
+### Maintenance
+
 Check sync
+
 ```
 sided status 2>&1 | jq .SyncInfo
 ```
+
 Node status
+
 ```
 sided status 2>&1 | jq
 ```
+
 Get validator information
+
 ```
 alignedlayerd status 2>&1 | jq .ValidatorInfo
 ```
+
 Get your p2p peer address
+
 ```
 echo $(sided tendermint show-node-id)'@'$(curl -s ifconfig.me)':'$(cat $HOME/.side/config/config.toml | sed -n '/Address to listen for incoming connection/{n;p;}' | sed 's/.*://; s/".*//')
 ```
+
 Get peers live
+
 ```
 curl -sS http://localhost:23857/net_info | jq -r '.result.peers[] | "\(.node_info.id)@\(.remote_ip):\(.node_info.listen_addr)"' | awk -F ':' '{print $1":"$(NF)}'
 ```
 
-Remove node 
+Remove node
+
 ```
 cd $HOME
 sudo systemctl stop seda
@@ -173,4 +219,3 @@ sudo rm -rf $HOME/.side
 sudo rm -rf $HOME/seda-chain
 sudo rm -rf $HOME/go
 ```
-
