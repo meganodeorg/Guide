@@ -1,4 +1,4 @@
-# Command AlignedLayer
+# Command
 
 ## Managing keys
 Generate new key
